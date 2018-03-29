@@ -19,7 +19,7 @@ def find_faces(image):
     crop_face = [image[y:y+h , x:x+w] for (x,w,y,h) in face_coord]
     
     # Normalizing the Crop Faces
-    normalized_faces = [Noramlizing_Face(face) for face in crop_face]
+    normalized_faces = [Normalizing_Face(face) for face in crop_face]
     
     # Returning
     return zip(normalized_faces, face_coord)    
@@ -32,7 +32,7 @@ def Normalizing_Face(face):
     # Resizing the image
     face = cv2.resize(face, (350, 350))
 
-    return face;    
+    return face    
     
 # Function for Locating Faces
 def Locate_Face(image):
@@ -41,7 +41,7 @@ def Locate_Face(image):
         scaleFactor=1.1,
         minNeighbors=15,
         minSize=(70, 70))
-    return faces;
+    return faces
     
 
     
