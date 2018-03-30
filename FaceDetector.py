@@ -8,7 +8,7 @@ Created on Thu Mar 29 10:18:17 2018
 
 import cv2
 
-fascCascade = cv2.CascadeClassifier('models/haarcascade_frontalface_default.xml')
+faceCascade = cv2.CascadeClassifier('classifier/haarcascade_frontalface_default.xml')
 
 # Function for finding faces
 def find_faces(image):
@@ -16,7 +16,7 @@ def find_faces(image):
     face_coord = Locate_Face(image)
     
     # Crop faces
-    crop_face = [image[y:y+h , x:x+w] for (x,w,y,h) in face_coord]
+    crop_face = [image[y:y+h , x:x+w] for (x,y,w,h) in face_coord]
     
     # Normalizing the Crop Faces
     normalized_faces = [Normalizing_Face(face) for face in crop_face]
@@ -36,12 +36,14 @@ def Normalizing_Face(face):
     
 # Function for Locating Faces
 def Locate_Face(image):
-    faces = fascCascade.detectMultiScale(  
+    faces = faceCascade.detectMultiScale(
         image,
         scaleFactor=1.1,
         minNeighbors=15,
-        minSize=(70, 70))
-    return faces
+        minSize=(70, 70)
+    )
+
+    return faces  # list of (x, y, w, h)
     
 
     

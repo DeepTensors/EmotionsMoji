@@ -41,6 +41,8 @@ def Clean_Dataset(emotions):
             for files in glob.glob('%s/*'% sessions):
                 
                 # Current Session
+                print (files)
+                
                 curr_sess = files[20:-30]
                 
                 print("Current Session :- " + str(curr_sess))
@@ -61,7 +63,7 @@ def Clean_Dataset(emotions):
                 destination_filename = "data/sorted_set/%s/%s" % (emotions[emotion], source_filename)
                 
                 # copy file
-                copyfile("data/source_images/%s/%s" % (current_session, source_filename), destination_filename)
+                copyfile("data/source_images/%s/%s" % (curr_sess, source_filename), destination_filename)
 
                 if not neutral_added:
                 
@@ -72,7 +74,7 @@ def Clean_Dataset(emotions):
                     destination_filename = "data/sorted_set/neutral/%s" % source_filename
                     
                     # copy file
-                    copyfile("data/source_images/%s/%s" % (current_session, source_filename), destination_filename)
+                    copyfile("data/source_images/%s/%s" % (curr_sess, source_filename), destination_filename)
                     
                     neutral_added = True
         
