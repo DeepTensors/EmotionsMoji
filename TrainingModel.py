@@ -11,9 +11,14 @@ import glob
 import random
 import numpy as np
 import cv2
+from PIL import Image
 
-from ImageManipulations import Load_Image
+from ImageManipulations import Load_Image as load_image
 
+print(help(cv2.face))
+print(cv2.__version__)
+
+# Checking the opencv version
 if cv2.__version__ != '3.1.0':
     fishface = cv2.createFisherFaceRecognizer()
 else:
@@ -28,8 +33,18 @@ def get_files(emotion):
     """
     files = glob.glob("data/sorted_set/%s/*" % emotion)
     random.shuffle(files)
+    
+    print (files)
+    
     training = files[:int(len(files) * training_set_size)]
+    
+    print (training_set_size)
+    print(training)
+    
     prediction = files[-int(len(files) * (1 - training_set_size)):]
+    
+    print (prediction)
+    
     return training, prediction
 
 
@@ -37,14 +52,20 @@ def make_sets():
     """
     method used to create datasets for all emotions. It loads both images and its labels to memory into training and test labels
     """
-    training_data = []
-    training_labels = []
-    prediction_data = []
-    prediction_labels = []
+    training_data = []  # Training Data
+    training_labels = [] # Training Data label (index of corresponding emotions)
+    prediction_data = [] # Prediction data
+    prediction_labels = [] # Training Data label (index of corresponding emotions)
+    
+    # Emotion in list of emotions
     for emotion in emotions:
+        
+        # Getting random training and prediction data
         training, prediction = get_files(emotion)
 
+        # One item from training
         for item in training:
+            # Append the corresponding data
             training_data.append(load_image(item))
             training_labels.append(emotions.index(emotion))
 
@@ -65,7 +86,7 @@ def run_recognizer():
     fishface.train(training_data, np.asarray(training_labels))
 
     print("predicting classification set")
-    correct = sum(1 for id, image in enumerate(prediction_data) if fishface.predict(image)[0] == prediction_labels[id])
+    correct = sum(1 for id, image in enumerate(prediction_data) if fishface.predict(image) == prediction_labels[id])
 
     return ((100 * correct) / len(prediction_data))
 
@@ -77,4 +98,4 @@ if __name__ == '__main__':
         correct = run_recognizer()
         print("got", correct, "percent correct!")
 
-    fishface.save('models/emotion_detection_model.xml')
+    fishface.save('classifier/emotion_detection_model.xml')

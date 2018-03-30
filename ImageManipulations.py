@@ -8,7 +8,10 @@ Created on Thu Mar 29 10:38:10 2018
 
 import cv2 
 import numpy as np
-import Image
+#if cv2.__version__ == '3.1.0':
+from PIL import Image
+#else:
+ #   import Image
 
 # Function to Convert Image to Numpy array
 def ImageToArray(image):
