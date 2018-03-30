@@ -12,6 +12,20 @@ from shutil import copyfile
 import cv2
 from FaceDetector import find_faces
 
+# Removing Old Dataset
+def remove_old_set(emotions):
+
+    print("Removing old dataset")
+
+    # Getting one emotion in emotions
+    for emotion in emotions:
+        #getting the files list
+        filelist = glob.glob("data/sorted_set/%s/*" % emotion)
+        # Take the file one by one and remove it
+        for f in filelist:
+            os.remove(f)
+
+
 # Making a clean dataset
 def Clean_Dataset(emotions):
     
@@ -42,18 +56,80 @@ def Clean_Dataset(emotions):
                 
                 # get path for last image in sequence, which contains the emotion
                 source_filename = images[-1].split('/')[-1]
+                
                 # do same for emotion containing image
                 destination_filename = "data/sorted_set/%s/%s" % (emotions[emotion], source_filename)
+                
                 # copy file
                 copyfile("data/source_images/%s/%s" % (current_session, source_filename), destination_filename)
 
                 if not neutral_added:
+                
                     # do same for neutral image
                     source_filename = images[0].split('/')[-1]
+                    
                     # generate path to put neutral image
                     destination_filename = "data/sorted_set/neutral/%s" % source_filename
+                    
                     # copy file
                     copyfile("data/source_images/%s/%s" % (current_session, source_filename), destination_filename)
+                    
                     neutral_added = True
         
-                
+# Extracting faces
+# Input -> emotions                    
+def extract_faces(emotions):
+    print ("extract faces")
+    
+    # getting the emotion from emotions 
+    for emotion in emotions:
+        
+        # Getting all photos corresponding to that emotion
+        photos = glob.glob('data/sorted_set/%s/*' % emotion)
+        
+        # Getting the file number and photo
+        for file_number, photo in enumerate(photos):
+            
+            # Reading the photo
+            frame = cv2.imread(photo)
+            
+            # getting the (normalized face , face coord)
+            normalized_faces = find_faces(frame)
+            
+            # Removing the photo
+            os.remove(photo)
+
+            # Getting the face <- ((normalized face , face coord))
+            for face in normalized_faces:
+                try:
+                    # Writing photo (normalized face) to the path given
+                    cv2.imwrite("data/sorted_set/%s/%s.png" % (emotion, file_number + 1), face[0])  # write image
+                except:
+                    # Printing error 
+                    print("error in processing %s" % photo)
+
+# Main              
+if __name__ == '__main__':
+    
+    '''
+    Emotions list
+    1. Neutral
+    2. Anger
+    3. Contempt
+    4. disgust
+    5. fear
+    6. happy
+    7. sadness
+    8. surprise
+    '''
+    emotions = ['neutral', 'anger', 'contempt', 'disgust', 'fear', 'happy', 'sadness', 'surprise']
+    
+    # Removing old dataset
+    remove_old_set(emotions)
+    
+    # Cleaning the Dataset
+    Clean_Dataset(emotions)
+    
+    # Extracting the faces 
+    extract_faces(emotions)                    
+                    
